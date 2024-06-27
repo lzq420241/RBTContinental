@@ -1,12 +1,12 @@
 cmake_minimum_required (VERSION 2.8)
 project(Testing)
 set (CMAKE_CXX_FLAGS "-g -std=c++11 -Wall -DBOOST_LOG_DYN_LINK ")
-find_package (vsomeip 2.6.0 REQUIRED)
+find_package (vsomeip3 REQUIRED)
 
 find_package( Boost 1.58 COMPONENTS system thread log_setup log REQUIRED )
 
-set (PATH_TO_SOMEIP_IMPLEMNTATION "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation") # CHANGE IT BEFORE COMPILE AND BUILD
-set (PATH_TO_INFRASTRUCTURE "/home/focus/SOME-IP/build-common-api-cpp-native/eth-core-infrastructure")# CHANGE IT BEFORE COMPILE AND BUILD
+set (PATH_TO_SOMEIP_IMPLEMNTATION "/home/test/vsomeip/implementation") # CHANGE IT BEFORE COMPILE AND BUILD
+set (PATH_TO_INFRASTRUCTURE "/home/test/RBTContinental/eth-core-infrastructure")# CHANGE IT BEFORE COMPILE AND BUILD
 
 
 
@@ -15,6 +15,7 @@ include_directories (
     ${VSOMEIP_INCLUDE_DIRS}
     ./inc
     ./pub
+    ${PATH_TO_SOMEIP_IMPLEMNTATION}
     ${PATH_TO_INFRASTRUCTURE}/network-stack-abstraction/inc
     ${PATH_TO_INFRASTRUCTURE}/network-stack-abstraction/pub
     ${PATH_TO_INFRASTRUCTURE}/SOME-IP-abstraction/SOME-IP-API/inc
@@ -64,40 +65,40 @@ install(FILES ${CMAKE_BINARY_DIR}/udp_API.pc DESTINATION ${CMAKE_INSTALL_DATAROO
 
 ##################### Tests ############################
 add_executable(SomeIpTesting ../test/SomeIpTesting.cpp)
-target_link_libraries(SomeIpTesting vsomeip ${Boost_LIBRARIES})
+target_link_libraries(SomeIpTesting vsomeip3 ${Boost_LIBRARIES})
 
 		## FORMAT ##
 
-add_executable(SOMEIPSRV_FORMAT ../src/SOMEIPSRV_FORMAT.cpp)
-target_link_libraries(SOMEIPSRV_FORMAT vsomeip ${Boost_LIBRARIES} SD_API udp_API)
+add_executable(SOMEIPSRV_FORMAT_client ../src/CLIENT_SOMEIPSRV_FORMAT.cpp)
+target_link_libraries(SOMEIPSRV_FORMAT_client SD_API udp_API vsomeip3 ${Boost_LIBRARIES})
 
 		## OPTIONS ##
 
-add_executable(SOMEIPSRV_OPTIONS ../src/SOMEIPSRV_OPTIONS.cpp)
-target_link_libraries(SOMEIPSRV_OPTIONS vsomeip ${Boost_LIBRARIES} SD_API udp_API)
+add_executable(SOMEIPSRV_OPTIONS_client ../src/CLIENT_SOMEIPSRV_OPTIONS.cpp)
+target_link_libraries(SOMEIPSRV_OPTIONS_client SD_API udp_API vsomeip3 ${Boost_LIBRARIES})
 
 		## SD MESSAGE ##
 
-add_executable(SOMEIPSRV_SD_MESSAGE ../src/SOMEIPSRV_SD_MESSAGE.cpp)
-target_link_libraries(SOMEIPSRV_SD_MESSAGE vsomeip ${Boost_LIBRARIES} SD_API udp_API)
+add_executable(SOMEIPSRV_SD_MESSAGE_client ../src/CLIENT_SOMEIPSRV_SD_MESSAGE.cpp)
+target_link_libraries(SOMEIPSRV_SD_MESSAGE_client SD_API udp_API vsomeip3 ${Boost_LIBRARIES})
 
 		## RPC ##
 
-add_executable(SOMEIPSRV_RPC ../src/SOMEIPSRV_RPC.cpp)
-target_link_libraries(SOMEIPSRV_RPC vsomeip ${Boost_LIBRARIES} SD_API udp_API)
+add_executable(SOMEIPSRV_RPC_client ../src/CLIENT_SOMEIPSRV_RPC.cpp)
+target_link_libraries(SOMEIPSRV_RPC_client SD_API udp_API vsomeip3 ${Boost_LIBRARIES})
 
 		## ONWIRE ##
 		
-add_executable(SOMEIPSRV_ONWIRE ../src/SOMEIPSRV_ONWIRE.cpp)
-target_link_libraries(SOMEIPSRV_ONWIRE vsomeip ${Boost_LIBRARIES} SD_API udp_API )
+add_executable(SOMEIPSRV_ONWIRE_client ../src/CLIENT_SOMEIPSRV_ONWIRE.cpp)
+target_link_libraries(SOMEIPSRV_ONWIRE_client SD_API udp_API vsomeip3 ${Boost_LIBRARIES} )
 
 		## BASIC ##
 
-add_executable(SOMEIPSRV_BASIC ../src/SOMEIPSRV_BASIC.cpp )
-target_link_libraries(SOMEIPSRV_BASIC vsomeip ${Boost_LIBRARIES} SD_API udp_API )
+add_executable(SOMEIPSRV_BASIC_client ../src/CLIENT_SOMEIPSRV_BASIC.cpp )
+target_link_libraries(SOMEIPSRV_BASIC_client SD_API udp_API vsomeip3 ${Boost_LIBRARIES} )
 
 		## SD BEHAVIOR ##
 
-add_executable(SOMEIPSRV_SD_BEHAVIOR ../src/SOMEIPSRV_SD_BEHAVIOR.cpp )
-target_link_libraries(SOMEIPSRV_SD_BEHAVIOR vsomeip ${Boost_LIBRARIES} SD_API udp_API )
+add_executable(SOMEIPSRV_SD_BEHAVIOR_client ../src/CLIENT_SOMEIPSRV_SD_BEHAVIOR.cpp )
+target_link_libraries(SOMEIPSRV_SD_BEHAVIOR_client SD_API udp_API vsomeip3 ${Boost_LIBRARIES} )
 

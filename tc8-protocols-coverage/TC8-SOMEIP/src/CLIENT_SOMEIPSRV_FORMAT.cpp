@@ -140,7 +140,7 @@ void run_19()
     condition.wait(its_lock);
     std::set<vsomeip::eventgroup_t> its_groups;
     its_groups.insert(EVENT_GROUP_ID_1_SI_1);
-    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, true);
+    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT);
     app->subscribe(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_GROUP_ID_1_SI_1);
     SD_Listen_Return sd_return;
     sd_return = ListenSubscribeAck(ParamListenTime, SERVICE_ID_1, EVENT_GROUP_ID_1_SI_1);
@@ -169,7 +169,7 @@ void run_21()
     condition.wait(its_lock);
     std::set<vsomeip::eventgroup_t> its_groups;
     its_groups.insert(EVENT_GROUP_ID_1_SI_1);
-    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, true);
+    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT);
     app->subscribe(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_GROUP_ID_1_SI_1);
     SD_Listen_Return sd_return;
     sd_return = ListenSubscribeAck(ParamListenTime, SERVICE_ID_1, EVENT_GROUP_ID_1_SI_1);
@@ -209,7 +209,7 @@ void run_23()
     condition.wait(its_lock);
     std::set<vsomeip::eventgroup_t> its_groups;
     its_groups.insert(EVENT_GROUP_ID_1_SI_1);
-    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, true);
+    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT);
     app->subscribe(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_GROUP_ID_1_SI_1);
     SD_Listen_Return sd_return;
     sd_return = ListenSubscribeAck(ParamListenTime, SERVICE_ID_1, EVENT_GROUP_ID_1_SI_1);
@@ -379,9 +379,9 @@ int SOMEIPSRV_FORMAT_02()
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
-        if (sd_return.SD_Received_Message->get_session() == 0x0001)
+        if (sd_return.SD_Received_Message->get_session() >= 0x0006)
         {
-            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with Session ID = 0x0000\n"
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with Session ID = " << sd_return.SD_Received_Message->get_session() << "\n"
                       << std::endl;
             test_ok = true;
         }
@@ -705,7 +705,7 @@ int SOMEIPSRV_FORMAT_11()
             type = (int)e->get_type();
         }
         numberOfEntries = sd_return.SD_Received_Message->get_entries().size();
-        int entries_length = get_entries_length(sd_return.SD_Received_Message);
+        int entries_length = sd_return.SD_Received_Message->get_length();
         if ((entries_length == numberOfEntries * 16) && correct_type)
         {
             std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with Entry Type  = 0x01 and Entry Length = (NumberOfEntries*16)\n"

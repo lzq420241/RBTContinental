@@ -134,7 +134,7 @@ void run_07()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
     test++;
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -189,7 +189,7 @@ void run_09()
     std::cout << "after" << std::endl;
     std::set<vsomeip::eventgroup_t> its_groups;
     its_groups.insert(EVENT_GROUP_ID_1_SI_1);
-    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, true); // ToDo  remove extract  ....
+    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT); // ToDo  remove extract  ....
     app->subscribe(SERVICE_ID_1, extractedInstID1, EVENT_GROUP_ID_1_SI_1);                            //instance set  to 0 causes a problem
     SD_Listen_Return sd_return;
     sd_return = ListenSubscribeAck(ParamListenTime, SERVICE_ID_1, EVENT_GROUP_ID_1_SI_1, (vsomeip::sd::option_type_e)0, extractedInstID1); // Todo : modify the sd Api
@@ -246,7 +246,7 @@ void run_11()
     msg_received = false;
     std::set<vsomeip::eventgroup_t> its_groups;
     its_groups.insert(EVENT_GROUP_ID_1_SI_1);
-    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, true); // ToDo  remove extract  ....
+    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT); // ToDo  remove extract  ....
     app->subscribe(SERVICE_ID_1, extractedInstID1, EVENT_GROUP_ID_1_SI_1);
     SD_Listen_Return sd_return;
     sd_return = ListenSubscribeAck(ParamListenTime, SERVICE_ID_1, EVENT_GROUP_ID_1_SI_1, (vsomeip::sd::option_type_e)0, extractedInstID1); // Todo : modify the sd Api
@@ -301,7 +301,7 @@ void run_13()
     condition.wait(its_lock);
     std::set<vsomeip::eventgroup_t> its_groups;
     its_groups.insert(EVENT_GROUP_ID_1_SI_1);
-    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, true); // ToDo  remove extract  ....
+    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT); // ToDo  remove extract  ....
     app->subscribe(SERVICE_ID_1, extractedInstID1, EVENT_GROUP_ID_1_SI_1);
     //subscribe
 }

@@ -36,7 +36,7 @@ void run()
     {
         std::set<vsomeip::eventgroup_t> its_groups;
         its_groups.insert(EVENT_GROUP_ID_1_SI_1);
-        app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, true);
+        app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT);
         app->subscribe(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_GROUP_ID_1_SI_1);
         SD_Listen_Return sd_return;
 

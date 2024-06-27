@@ -57,7 +57,7 @@ void run_01()
     }
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -106,7 +106,7 @@ void run_04()
     }
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (true)
     {
@@ -160,7 +160,7 @@ void run_05()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
 
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     //std::cout<< "\nWaiting for 15 seconds \n\n";
     //sleep(15);
@@ -219,7 +219,7 @@ void run_06()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
 
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     //std::cout<< "\nWaiting for 15 seconds \n\n";
     //sleep(15);
@@ -283,7 +283,7 @@ void run_07()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
 
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     //std::cout<< "\nWaiting for 15 seconds \n\n";
     //sleep(15);
@@ -342,7 +342,7 @@ void run_08()
     request->set_payload(its_payload);
     test++;
     msg_received = false;
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -385,7 +385,7 @@ void run_08()
     request2->set_payload(its_payload2);
     test++;
     msg_received = false;
-    app->send(request2, true);
+    app->send(request2);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -451,7 +451,7 @@ void run_09()
     //UDP_Packet  pack = CreateUDP();
     //SendUDP(pack);
 
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {

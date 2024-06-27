@@ -17,16 +17,16 @@
 #include <chrono>
 #include <vsomeip/vsomeip.hpp>
 #include "udp.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/utility/include/byteorder.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/message/include/deserializer.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/service_discovery/include/message_impl.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/service_discovery/include/service_discovery.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/service_discovery/include/constants.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/service_discovery/include/enumeration_types.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/service_discovery/include/eventgroupentry_impl.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/message/include/message_impl.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/service_discovery/include/option_impl.hpp"
-#include "/home/focus/SOME-IP/build-common-api-cpp-native/vsomeip/implementation/service_discovery/include/ip_option_impl.hpp"
+#include "utility/include/byteorder.hpp"
+#include "message/include/deserializer.hpp"
+#include "service_discovery/include/message_impl.hpp"
+#include "service_discovery/include/service_discovery.hpp"
+#include "service_discovery/include/constants.hpp"
+#include "service_discovery/include/enumeration_types.hpp"
+#include "service_discovery/include/eventgroupentry_impl.hpp"
+#include "message/include/message_impl.hpp"
+#include "service_discovery/include/option_impl.hpp"
+#include "service_discovery/include/ip_option_impl.hpp"
 
 /******************************************************************************
 * MACROS

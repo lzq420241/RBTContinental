@@ -82,7 +82,7 @@ void run_01()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
     test++;
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {

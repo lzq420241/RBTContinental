@@ -64,7 +64,7 @@ void run_01()
     }
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -136,7 +136,7 @@ void run_02()
     }
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -196,7 +196,7 @@ void run_03()
     }
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -258,7 +258,7 @@ void run_04()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
     test++;
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -293,7 +293,7 @@ void run_04()
     request2->set_payload(its_payload2);
     test++;
     msg_received = false;
-    app->send(request2, true);
+    app->send(request2);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -356,7 +356,7 @@ void run_06()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
     test++;
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -394,7 +394,7 @@ void run_06()
     its_payload2->set_data(its_payload_data2);
     request2->set_payload(its_payload2);
     test++;
-    app->send(request2, true);
+    app->send(request2);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -470,7 +470,7 @@ void run_07()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
 
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -530,7 +530,7 @@ void run_10()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
 
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -569,7 +569,7 @@ void run_10()
     its_payload2->set_data(its_payload_data2);
     request2->set_payload(its_payload2);
 
-    app->send(request2, true);
+    app->send(request2);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -640,7 +640,7 @@ void run_11()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
     test++;
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
@@ -700,7 +700,7 @@ void run_12()
     its_payload->set_data(its_payload_data);
     request->set_payload(its_payload);
     test++;
-    app->send(request, true);
+    app->send(request);
     start = std::chrono::steady_clock::now();
     while (msg_received == false)
     {
