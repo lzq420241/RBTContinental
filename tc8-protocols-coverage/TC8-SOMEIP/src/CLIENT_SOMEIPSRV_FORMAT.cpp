@@ -669,13 +669,92 @@ int SOMEIPSRV_FORMAT_08()
         return 1;
     }
 }
+
 int SOMEIPSRV_FORMAT_09()
 {
-    printf("\tNOT IMPLEMENTED YET ");
-    return 2;
+    app = vsomeip::runtime::get()->create_application("testClient");
+    app->init();
+    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
+    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipServerEvent.service");
+    SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
+    if (sd_return.SD_Result == Receive_E_OK)
+    {
+        if (((int)sd_return.SD_Received_Message->get_flags() & 0x3F) == 0)
+        {
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE) with flags other than Reboot and Unicast == 0\n"
+                      << std::endl;
+            test_ok = true;
+        }
+        else
+        {
+            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE) with flags other than Reboot and Unicast = " << ((int)sd_return.SD_Received_Message->get_flags() & 0x3F) << "\n"
+                      << std::endl;
+        }
+    }
+    else
+    {
+        std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
+                   << std::endl;
+    }
+    std::thread sender(run_08);
+    app->start();
+    sender.join();
+    system("sudo systemctl stop SomeipServerEvent.service");
+    if (test_ok)
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_09: : Test_OK \n";
+        return 0;
+    }
+    else
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_09: : Test_NOK \n";
+        return 1;
+    }
 }
 int SOMEIPSRV_FORMAT_10()
 {
+    app = vsomeip::runtime::get()->create_application("testClient");
+    app->init();
+    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
+    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipServerEvent.service");
+    SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
+    if (sd_return.SD_Result == Receive_E_OK)
+    {
+        if (sd_return.SD_Received_Message->get_reserved() == 0)
+        {
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE) with reserved == 0\n"
+                      << std::endl;
+            test_ok = true;
+        }
+        else
+        {
+            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE) with reserved = " << sd_return.SD_Received_Message->get_reserved() << "\n"
+                      << std::endl;
+        }
+    }
+    else
+    {
+        std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
+                   << std::endl;
+    }
+    std::thread sender(run_08);
+    app->start();
+    sender.join();
+    system("sudo systemctl stop SomeipServerEvent.service");
+    if (test_ok)
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_10: : Test_OK \n";
+        return 0;
+    }
+    else
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_10: : Test_NOK \n";
+        return 1;
+    }
 }
 int SOMEIPSRV_FORMAT_11()
 {
