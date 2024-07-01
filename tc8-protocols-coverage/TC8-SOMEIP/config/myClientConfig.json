@@ -1,25 +1,28 @@
 {
-    "unicast" : "192.168.20.239",
-	"netmask" : "255.255.255.0",
+    "unicast" : "10.10.60.73",
     "logging" :
     {
         "level" : "debug",
         "console" : "true",
-        "file" : { "enable" : "false", "path" : "/var/log/vsomeip.log" },
+        "file" : { "enable" : "false", "path" : "/tmp/vsomeip.log" },
         "dlt" : "false"
     },
-    "applications" : 
+    "applications" :
     [
         {
-            "name" : "testClient",
-            "id" : "0x1313"
-        } 
+            "name" : "service-sample",
+            "id" : "0x1277"
+        },
+        {
+            "name" : "client-sample",
+            "id" : "0x1344"
+        }
     ],
-    "routing" : "testClient",
+    "routing" : "service-sample",
     "service-discovery" :
     {
         "enable" : "true",
-        "multicast" : "224.224.224.245",
+        "multicast" : "224.244.224.245",
         "port" : "30490",
         "protocol" : "udp",
         "initial_delay_min" : "10",

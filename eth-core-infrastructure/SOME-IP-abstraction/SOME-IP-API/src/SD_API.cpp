@@ -71,7 +71,8 @@ SD_Listen_Return ListenOffer(double __timeOfListen, vsomeip::service_t __servieI
     }
     int n = -1;
     uint8_t __buf[4096];
-    vsomeip::sd::message_impl sd_msg;
+    std::shared_ptr<vsomeip::sd::message_impl> sd_msg = std::make_shared<vsomeip::sd::message_impl>();
+
     static struct SD_Listen_Return ret_Listen;
     auto start = std::chrono::steady_clock::now();
     while (waiting)
@@ -86,9 +87,9 @@ SD_Listen_Return ListenOffer(double __timeOfListen, vsomeip::service_t __servieI
             if (its_service == vsomeip::sd::service && its_method == vsomeip::sd::method)
             { //sd
                 found = true;
-                if (sd_msg.deserialize(&its_deserializer) == true)
+                if (sd_msg->deserialize(&its_deserializer) == true)
                 {
-                    for (auto e : sd_msg.get_entries())
+                    for (auto e : sd_msg->get_entries())
                     {
                         if (found == false)
                         {
@@ -97,7 +98,7 @@ SD_Listen_Return ListenOffer(double __timeOfListen, vsomeip::service_t __servieI
                             {
                                 if ((uint8_t)__optType != 0x00)
                                 {
-                                    if ((int)__optType == (int)(sd_msg.get_options()[0]->get_type()))
+                                    if ((int)__optType == (int)(sd_msg->get_options()[0]->get_type()))
                                     {
                                         found &= true;
                                     }
@@ -116,10 +117,10 @@ SD_Listen_Return ListenOffer(double __timeOfListen, vsomeip::service_t __servieI
                     if (__NumberOfIPV4Endpoint != 0)
                     {
                         int nb_ipv4 = 0;
-                        int lim = sd_msg.get_options().size();
+                        int lim = sd_msg->get_options().size();
                         for (int i = 0; i < lim; i++)
                         {
-                            if (sd_msg.get_options()[0]->get_type() == vsomeip::sd::option_type_e::IP4_ENDPOINT)
+                            if (sd_msg->get_options()[0]->get_type() == vsomeip::sd::option_type_e::IP4_ENDPOINT)
                             {
                                 nb_ipv4++;
                             }
@@ -135,7 +136,7 @@ SD_Listen_Return ListenOffer(double __timeOfListen, vsomeip::service_t __servieI
                     }
                     if (__NumberOfExpectedOfferServiceEntries != 0)
                     {
-                        if (sd_msg.get_entries().size() == __NumberOfExpectedOfferServiceEntries)
+                        if (sd_msg->get_entries().size() == __NumberOfExpectedOfferServiceEntries)
                         {
                             found &= true;
                         }
@@ -149,7 +150,7 @@ SD_Listen_Return ListenOffer(double __timeOfListen, vsomeip::service_t __servieI
             if (found)
             {
                 ret_Listen.SD_Result = Receive_E_OK;
-                ret_Listen.SD_Received_Message = &sd_msg;
+                ret_Listen.SD_Received_Message = sd_msg;
                 closeUdp(sockfd);
                 waiting = false;
                 return ret_Listen;
@@ -212,7 +213,7 @@ SD_Listen_Return *Listen_2_Offer(double __timeOfListen, vsomeip::service_t __ser
     }
     int n = -1;
     uint8_t __buf[4096];
-    vsomeip::sd::message_impl sd_msg;
+    std::shared_ptr<vsomeip::sd::message_impl> sd_msg = std::make_shared<vsomeip::sd::message_impl>();
     static struct SD_Listen_Return ret_Listen[2];
     auto start = std::chrono::steady_clock::now();
     while (waiting)
@@ -228,9 +229,9 @@ SD_Listen_Return *Listen_2_Offer(double __timeOfListen, vsomeip::service_t __ser
             if (its_service == vsomeip::sd::service && its_method == vsomeip::sd::method)
             { //sd
                 found = true;
-                if (sd_msg.deserialize(&its_deserializer) == true)
+                if (sd_msg->deserialize(&its_deserializer) == true)
                 {
-                    for (auto e : sd_msg.get_entries())
+                    for (auto e : sd_msg->get_entries())
                     {
                         if (found == false)
                         {
@@ -239,7 +240,7 @@ SD_Listen_Return *Listen_2_Offer(double __timeOfListen, vsomeip::service_t __ser
                             {
                                 if ((uint8_t)__optType != 0x00)
                                 {
-                                    if ((int)__optType == (int)(sd_msg.get_options()[0]->get_type()))
+                                    if ((int)__optType == (int)(sd_msg->get_options()[0]->get_type()))
                                     {
                                         found &= true;
                                     }
@@ -258,10 +259,10 @@ SD_Listen_Return *Listen_2_Offer(double __timeOfListen, vsomeip::service_t __ser
                     if (__NumberOfIPV4Endpoint != 0)
                     {
                         int nb_ipv4 = 0;
-                        int lim = sd_msg.get_options().size();
+                        int lim = sd_msg->get_options().size();
                         for (int i = 0; i < lim; i++)
                         {
-                            if (sd_msg.get_options()[0]->get_type() == vsomeip::sd::option_type_e::IP4_ENDPOINT)
+                            if (sd_msg->get_options()[0]->get_type() == vsomeip::sd::option_type_e::IP4_ENDPOINT)
                             {
                                 nb_ipv4++;
                             }
@@ -277,7 +278,7 @@ SD_Listen_Return *Listen_2_Offer(double __timeOfListen, vsomeip::service_t __ser
                     }
                     if (__NumberOfExpectedOfferServiceEntries != 0)
                     {
-                        if (sd_msg.get_entries().size() == __NumberOfExpectedOfferServiceEntries)
+                        if (sd_msg->get_entries().size() == __NumberOfExpectedOfferServiceEntries)
                         {
                             found &= true;
                         }
@@ -291,7 +292,7 @@ SD_Listen_Return *Listen_2_Offer(double __timeOfListen, vsomeip::service_t __ser
             if (found)
             {
                 ret_Listen[nb_msg].SD_Result = Receive_E_OK;
-                ret_Listen[nb_msg].SD_Received_Message = &sd_msg;
+                ret_Listen[nb_msg].SD_Received_Message = sd_msg;
                 ret_Listen[nb_msg].timestamp = ts;
                 nb_msg++;
                 if (nb_msg >= 2)
@@ -369,16 +370,16 @@ SD_Listen_Return ListenSubscribeAck(double __timeOfListen, vsomeip::service_t __
         int n = recvUdp(sockfd, __buf, 4096);
         if (n > 0)
         {
-            vsomeip::sd::message_impl sd_msg;
+            std::shared_ptr<vsomeip::sd::message_impl> sd_msg = std::make_shared<vsomeip::sd::message_impl>();
             vsomeip::deserializer its_deserializer(__buf, n, 0); //
             vsomeip::service_t its_service = VSOMEIP_BYTES_TO_WORD(__buf[VSOMEIP_SERVICE_POS_MIN], __buf[VSOMEIP_SERVICE_POS_MAX]);
             vsomeip::method_t its_method = VSOMEIP_BYTES_TO_WORD(__buf[VSOMEIP_METHOD_POS_MIN], __buf[VSOMEIP_METHOD_POS_MAX]);
             if (its_service == vsomeip::sd::service && its_method == vsomeip::sd::method)
             { //sd
                 found = true;
-                if (sd_msg.deserialize(&its_deserializer) == true)
+                if (sd_msg->deserialize(&its_deserializer) == true)
                 {
-                    for (auto e : sd_msg.get_entries())
+                    for (auto e : sd_msg->get_entries())
                     {
                         if (found == false)
                         {
@@ -391,7 +392,7 @@ SD_Listen_Return ListenSubscribeAck(double __timeOfListen, vsomeip::service_t __
                                 {
                                     if ((uint8_t)__optType != 0x00)
                                     {
-                                        if ((int)__optType == (int)(sd_msg.get_options()[0]->get_type()))
+                                        if ((int)__optType == (int)(sd_msg->get_options()[0]->get_type()))
                                         {
                                             found &= true;
                                         }
@@ -427,7 +428,7 @@ SD_Listen_Return ListenSubscribeAck(double __timeOfListen, vsomeip::service_t __
                 if (found)
                 {
                     ret_Listen.SD_Result = Receive_E_OK;
-                    ret_Listen.SD_Received_Message = &sd_msg;
+                    ret_Listen.SD_Received_Message = sd_msg;
                     closeUdp(sockfd);
                     waiting = false;
                     return ret_Listen;
@@ -465,7 +466,7 @@ SD_Listen_Return ListenSubscribeAck(double __timeOfListen, vsomeip::service_t __
 * -
 *
 ***************************************************************************************************/
-vsomeip::sd::entry_impl *get_first_entry(vsomeip::sd::message_impl *msg)
+vsomeip::sd::entry_impl *get_first_entry(std::shared_ptr<vsomeip::sd::message_impl> msg)
 {
     for (int i = 0; i < msg->get_entries().size(); i++)
     {
@@ -495,7 +496,7 @@ vsomeip::sd::entry_impl *get_first_entry(vsomeip::sd::message_impl *msg)
 * -
 *
 ***************************************************************************************************/
-vsomeip::sd::eventgroupentry_impl get_first_eventGroup_entry(vsomeip::sd::message_impl *msg)
+vsomeip::sd::eventgroupentry_impl get_first_eventGroup_entry(std::shared_ptr<vsomeip::sd::message_impl> msg)
 {
     //for (auto e : msg->get_entries()) {
     for (int i = 0; i < msg->get_entries().size(); i++)
@@ -507,7 +508,8 @@ vsomeip::sd::eventgroupentry_impl get_first_eventGroup_entry(vsomeip::sd::messag
         return *e2;
     }
 }
-vsomeip::sd::option_impl *get_ipv4_option(vsomeip::sd::message_impl *msg)
+
+vsomeip::sd::option_impl *get_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg)
 {
     for (auto o : msg->get_options())
     {
@@ -539,7 +541,7 @@ vsomeip::sd::option_impl *get_ipv4_option(vsomeip::sd::message_impl *msg)
 * -
 *
 ***************************************************************************************************/
-int get_number_of_ipv4_option(vsomeip::sd::message_impl *msg)
+int get_number_of_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg)
 {
     int nbr = 0;
     for (auto o : msg->get_options())
@@ -574,7 +576,7 @@ int get_number_of_ipv4_option(vsomeip::sd::message_impl *msg)
 * -
 *
 ***************************************************************************************************/
-int get_port_of_ipv4_option(vsomeip::sd::message_impl *msg)
+int get_port_of_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg)
 {
     std::shared_ptr<vsomeip::sd::ip_option_impl> ip_opt;
     for (auto o : msg->get_options())

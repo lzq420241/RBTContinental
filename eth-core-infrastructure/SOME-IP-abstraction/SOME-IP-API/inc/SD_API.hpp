@@ -53,7 +53,7 @@ typedef enum
 
 typedef struct SD_Listen_Return {
     SD_Result_Type SD_Result;                           /*the return code of the sniff*/
-    vsomeip::sd::message_impl *SD_Received_Message;     /*the received service discovery  msg (if received)*/
+    std::shared_ptr<vsomeip::sd::message_impl> SD_Received_Message;     /*the received service discovery  msg (if received)*/
     time_stamp timestamp;
 };
 
@@ -179,8 +179,7 @@ SD_Listen_Return ListenSubscribeAck(double __timeOfListen ,vsomeip::service_t __
 * -
 *
 ***************************************************************************************************/
-vsomeip::sd::entry_impl* get_first_entry(vsomeip::sd::message_impl * msg);
-
+vsomeip::sd::entry_impl* get_first_entry(std::shared_ptr<vsomeip::sd::message_impl> msg);
 /***************************************************************************************************
 *
 *   FUNCTION NAME: get_first_eventGroup_entry
@@ -202,9 +201,9 @@ vsomeip::sd::entry_impl* get_first_entry(vsomeip::sd::message_impl * msg);
 * -
 *
 ***************************************************************************************************/
-vsomeip::sd::eventgroupentry_impl get_first_eventGroup_entry(vsomeip::sd::message_impl *msg );
+vsomeip::sd::eventgroupentry_impl get_first_eventGroup_entry(std::shared_ptr<vsomeip::sd::message_impl> msg );
 
-vsomeip::sd::option_impl* get_ipv4_option (vsomeip::sd::message_impl *msg );
+vsomeip::sd::option_impl* get_ipv4_option (std::shared_ptr<vsomeip::sd::message_impl> msg );
 
 /***************************************************************************************************
 *
@@ -227,7 +226,7 @@ vsomeip::sd::option_impl* get_ipv4_option (vsomeip::sd::message_impl *msg );
 * -
 *
 ***************************************************************************************************/
-int get_number_of_ipv4_option (vsomeip::sd::message_impl *msg );
+int get_number_of_ipv4_option (std::shared_ptr<vsomeip::sd::message_impl> msg );
 
 
 
@@ -253,7 +252,7 @@ int get_number_of_ipv4_option (vsomeip::sd::message_impl *msg );
 *
 ***************************************************************************************************/
 
-int get_port_of_ipv4_option (vsomeip::sd::message_impl *msg );
+int get_port_of_ipv4_option (std::shared_ptr<vsomeip::sd::message_impl> msg );
 
 #endif /* SD_API_H_ */
 /** \}    end of addtogroup */

@@ -6,7 +6,7 @@ find_package (vsomeip3 REQUIRED)
 find_package( Boost 1.58 COMPONENTS system thread log_setup log REQUIRED )
 
 set (PATH_TO_SOMEIP_IMPLEMNTATION "/home/test/vsomeip/implementation") # CHANGE IT BEFORE COMPILE AND BUILD
-set (PATH_TO_INFRASTRUCTURE "/home/test/RBTContinental/eth-core-infrastructure")# CHANGE IT BEFORE COMPILE AND BUILD
+set (PATH_TO_INFRASTRUCTURE "/home/test/tc8_test/RBTContinental/eth-core-infrastructure")# CHANGE IT BEFORE COMPILE AND BUILD
 
 
 
