@@ -23,6 +23,7 @@
 #include "service_discovery/include/service_discovery.hpp"
 #include "service_discovery/include/constants.hpp"
 #include "service_discovery/include/enumeration_types.hpp"
+#include "service_discovery/include/serviceentry_impl.hpp"
 #include "service_discovery/include/eventgroupentry_impl.hpp"
 #include "message/include/message_impl.hpp"
 #include "service_discovery/include/option_impl.hpp"
@@ -180,6 +181,28 @@ SD_Listen_Return ListenSubscribeAck(double __timeOfListen ,vsomeip::service_t __
 *
 ***************************************************************************************************/
 vsomeip::sd::entry_impl* get_first_entry(std::shared_ptr<vsomeip::sd::message_impl> msg);
+/***************************************************************************************************
+*
+*   FUNCTION NAME: get_first_service_entry
+*
+***************************************************************************************************/
+/**
+* @brief
+*  This fuction will  extract the first service entry from the entry array and return it
+*
+* @par Parameters
+* @param[in]    msg                                         the msg to  extract the first entry from
+*
+* @return vsomeip::sd::serviceentry_impl
+*
+* @note
+* -
+*
+* @warning
+* -
+*
+***************************************************************************************************/
+vsomeip::sd::serviceentry_impl get_first_service_entry(std::shared_ptr<vsomeip::sd::message_impl> msg );
 /***************************************************************************************************
 *
 *   FUNCTION NAME: get_first_eventGroup_entry

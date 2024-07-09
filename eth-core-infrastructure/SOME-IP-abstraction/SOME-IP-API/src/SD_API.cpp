@@ -477,6 +477,40 @@ vsomeip::sd::entry_impl *get_first_entry(std::shared_ptr<vsomeip::sd::message_im
 
 /***************************************************************************************************
 *
+*   FUNCTION NAME: get_first_service_entry
+*
+***************************************************************************************************/
+/**
+* @brief
+*  This fuction will  extract the first service entry from the entry array and return it
+*
+* @par Parameters
+* @param[in]    msg                                         the msg to  extract the first entry from
+*
+* @return vsomeip::sd::serviceentry_impl
+*
+* @note
+* -
+*
+* @warning
+* -
+*
+***************************************************************************************************/
+vsomeip::sd::serviceentry_impl get_first_service_entry(std::shared_ptr<vsomeip::sd::message_impl> msg)
+{
+    //for (auto e : msg->get_entries()) {
+    for (int i = 0; i < msg->get_entries().size(); i++)
+    {
+        std::shared_ptr<vsomeip::sd::entry_impl> e = msg->get_entries()[i];
+        std::shared_ptr<vsomeip::sd::serviceentry_impl> casted_entry =
+            std::static_pointer_cast<vsomeip::sd::serviceentry_impl>(e);
+        vsomeip::sd::serviceentry_impl *e2 = casted_entry.get();
+        return *e2;
+    }
+}
+
+/***************************************************************************************************
+*
 *   FUNCTION NAME: get_first_eventGroup_entry
 *
 ***************************************************************************************************/

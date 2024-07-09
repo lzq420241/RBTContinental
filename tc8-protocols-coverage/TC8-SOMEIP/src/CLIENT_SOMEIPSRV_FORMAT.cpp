@@ -6,7 +6,6 @@
 #include <thread>
 #include <unistd.h>
 #include <vsomeip/vsomeip.hpp>
-#include <serviceentry_impl.hpp>
 //sniff offer service
 #include <string.h>
 #include <sys/socket.h>
@@ -165,6 +164,52 @@ void run_19()
     app->stop();
     condition.notify_one();
 }
+void run_20()
+{
+    condition.wait(its_lock);
+    std::set<vsomeip::eventgroup_t> its_groups;
+    its_groups.insert(EVENT_GROUP_ID_1_SI_1);
+    app->request_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1, its_groups, vsomeip::event_type_e::ET_EVENT);
+    app->subscribe(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_GROUP_ID_1_SI_1);
+    SD_Listen_Return sd_return;
+    sd_return = ListenSubscribeAck(ParamListenTime, SERVICE_ID_1, EVENT_GROUP_ID_1_SI_1);
+    test_ok = false;
+    if (sd_return.SD_Result == Receive_E_OK)
+    {
+        vsomeip::sd::entry_impl *e;
+        int numberOfEntries;
+        int type;
+        auto entries = sd_return.SD_Received_Message->get_entries(); 
+
+        e = entries.front().get(); // Access the first entry
+        type = (int)e->get_type();
+        numberOfEntries = entries.size();
+        uint32_t entries_length = sd_return.SD_Received_Message->get_entries_length();
+        if (entries_length == numberOfEntries * 16)
+        {
+            std::cout << "\nPart 2 of test is Ok: Notification received (OFFER SERVICE)  with Entry Type  = 0x01 and Entry Length = (NumberOfEntries*16)\n"
+                    << std::endl;
+            test_ok = true;
+        }
+        else
+        {
+            std::cout << "\nPart 2 of test is NOT OK: Notification received (OFFER SERVICE)  with Entry Type  = " << type << " and Entry Length = " << entries_length << "\n"
+                    << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "\nPart 2 of test is NOT OK: Timout without receiving SUBSCRIBE ACK \n"
+                  << std::endl;
+    }
+
+    app->unsubscribe(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_GROUP_ID_1_SI_1);
+    app->release_event(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, EVENT_ID_1_EG_ID_1);
+    app->clear_all_handler();
+    app->release_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
+    app->stop();
+    condition.notify_one();
+}
 void run_21()
 {
     condition.wait(its_lock);
@@ -178,16 +223,16 @@ void run_21()
     {
         vsomeip::sd::eventgroupentry_impl e;
 
-        uint16_t temp = sd_return.SD_Received_Message->get_option_index(sd_return.SD_Received_Message->get_options()[1]);
+        uint16_t temp = sd_return.SD_Received_Message->get_option_index(sd_return.SD_Received_Message->get_options()[0]);
         if (temp == 0x00)
         {
-            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with Index 1st Option in Entry Array = 0 \n"
+            std::cout << "\nPart 2 of test is Ok: Notification received (OFFER SERVICE)  with Index 1st Option in Entry Array = 0 \n"
                       << std::endl;
             test_ok = test_ok && true;
         }
         else
         {
-            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE)  with wrong Index 1st Option in Entry Array = " << temp << "\n"
+            std::cout << "\nPart 2 of test is NOT OK: Notification received (OFFER SERVICE)  with wrong Index 1st Option in Entry Array = " << temp << "\n"
                       << std::endl;
             test_ok = test_ok && false;
         }
@@ -333,7 +378,7 @@ int SOMEIPSRV_FORMAT_01()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -357,7 +402,7 @@ int SOMEIPSRV_FORMAT_01()
     std::thread sender(run_01);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_01: : Test_OK \n";
@@ -376,7 +421,7 @@ int SOMEIPSRV_FORMAT_02()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -400,7 +445,7 @@ int SOMEIPSRV_FORMAT_02()
     std::thread sender(run_02);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_02: : Test_OK \n";
@@ -419,7 +464,7 @@ int SOMEIPSRV_FORMAT_03()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -443,7 +488,7 @@ int SOMEIPSRV_FORMAT_03()
     std::thread sender(run_03);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_03: : Test_OK \n";
@@ -462,7 +507,7 @@ int SOMEIPSRV_FORMAT_04()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -486,7 +531,7 @@ int SOMEIPSRV_FORMAT_04()
     std::thread sender(run_04);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_04: : Test_OK \n";
@@ -505,7 +550,7 @@ int SOMEIPSRV_FORMAT_05()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -529,7 +574,7 @@ int SOMEIPSRV_FORMAT_05()
     std::thread sender(run_05);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_05: : Test_OK \n";
@@ -548,7 +593,7 @@ int SOMEIPSRV_FORMAT_06()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -572,7 +617,7 @@ int SOMEIPSRV_FORMAT_06()
     std::thread sender(run_06);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_06: : Test_OK \n";
@@ -591,7 +636,7 @@ int SOMEIPSRV_FORMAT_07()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -615,7 +660,7 @@ int SOMEIPSRV_FORMAT_07()
     std::thread sender(run_07);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_07: : Test_OK \n";
@@ -634,7 +679,7 @@ int SOMEIPSRV_FORMAT_08()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -658,7 +703,7 @@ int SOMEIPSRV_FORMAT_08()
     std::thread sender(run_08);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_08: : Test_OK \n";
@@ -678,7 +723,7 @@ int SOMEIPSRV_FORMAT_09()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -702,7 +747,7 @@ int SOMEIPSRV_FORMAT_09()
     std::thread sender(run_08);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_09: : Test_OK \n";
@@ -721,7 +766,7 @@ int SOMEIPSRV_FORMAT_10()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -745,7 +790,7 @@ int SOMEIPSRV_FORMAT_10()
     std::thread sender(run_08);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_10: : Test_OK \n";
@@ -765,7 +810,7 @@ int SOMEIPSRV_FORMAT_11()
     sleep(2);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -808,7 +853,7 @@ int SOMEIPSRV_FORMAT_11()
     std::thread sender(run_08);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_11: : Test_OK \n";
@@ -827,7 +872,7 @@ int SOMEIPSRV_FORMAT_12()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -852,7 +897,7 @@ int SOMEIPSRV_FORMAT_12()
     std::thread sender(run_12);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_12: Test_OK \n";
@@ -871,7 +916,7 @@ int SOMEIPSRV_FORMAT_13()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -897,7 +942,7 @@ int SOMEIPSRV_FORMAT_13()
     std::thread sender(run_13);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_13: Test_OK \n";
@@ -916,7 +961,7 @@ int SOMEIPSRV_FORMAT_14()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -932,7 +977,7 @@ int SOMEIPSRV_FORMAT_14()
     std::thread sender(run_14);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_14: Test_OK \n";
@@ -951,7 +996,7 @@ int SOMEIPSRV_FORMAT_15()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -977,7 +1022,7 @@ int SOMEIPSRV_FORMAT_15()
     std::thread sender(run_15);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_15: Test_OK \n";
@@ -996,7 +1041,7 @@ int SOMEIPSRV_FORMAT_16()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -1022,7 +1067,7 @@ int SOMEIPSRV_FORMAT_16()
     std::thread sender(run_16);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_16: Test_OK \n";
@@ -1041,7 +1086,7 @@ int SOMEIPSRV_FORMAT_17()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -1067,7 +1112,7 @@ int SOMEIPSRV_FORMAT_17()
     std::thread sender(run_17);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_17: Test_OK \n";
@@ -1086,21 +1131,21 @@ int SOMEIPSRV_FORMAT_18()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
-        vsomeip::sd::serviceentry_impl *e;
-        e = (vsomeip::sd::serviceentry_impl *)get_first_entry(sd_return.SD_Received_Message);
-        if ((uint8_t)e->get_minor_version() == (uint8_t)SERVICE_ID_1_MINOR_VER)
+        vsomeip::sd::serviceentry_impl e;
+        e = get_first_service_entry(sd_return.SD_Received_Message);
+        if ((uint8_t)e.get_minor_version() == (uint8_t)SERVICE_ID_1_MINOR_VER)
         {
-            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with  Minor Version in Entry Array = " << SERVICE_ID_1_MINOR_VER << "\n"
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with  Minor Version in Entry Array = " << std::hex << SERVICE_ID_1_MINOR_VER << "\n"
                       << std::endl;
             test_ok = true;
         }
         else
         {
-            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE)  with Minor Version  in Entry Array = " << (int)e->get_minor_version() << "\n"
+            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE)  with Minor Version  in Entry Array = " << (int)e.get_minor_version() << "\n"
                       << std::endl;
         }
     }
@@ -1112,7 +1157,7 @@ int SOMEIPSRV_FORMAT_18()
     std::thread sender(run_16);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_18: Test_OK \n";
@@ -1131,7 +1176,7 @@ int SOMEIPSRV_FORMAT_19()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipNotify.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -1147,7 +1192,7 @@ int SOMEIPSRV_FORMAT_19()
     std::thread sender(run_19);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipNotify.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_19: Test_OK \n";
@@ -1161,8 +1206,38 @@ int SOMEIPSRV_FORMAT_19()
 }
 int SOMEIPSRV_FORMAT_20()
 {
-    printf("\tNOT IMPLEMENTED YET ");
-    return 2;
+    app = vsomeip::runtime::get()->create_application("testClient");
+    app->init();
+    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
+    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipNotify.service");
+    SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
+    if (sd_return.SD_Result == Receive_E_OK)
+    {
+        std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE) \n"
+                  << std::endl;
+        test_ok = true;
+    }
+    else
+    {
+        std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
+                   << std::endl;
+    }
+    std::thread sender(run_20);
+    app->start();
+    sender.join();
+    system("sudo systemctl stop SomeipNotify.service");
+    if (test_ok)
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_20: Test_OK \n";
+        return 0;
+    }
+    else
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_20: Test_NOK \n";
+        return 1;
+    }
 }
 int SOMEIPSRV_FORMAT_21()
 {
@@ -1171,7 +1246,7 @@ int SOMEIPSRV_FORMAT_21()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipNotify.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -1187,7 +1262,7 @@ int SOMEIPSRV_FORMAT_21()
     std::thread sender(run_21);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipNotify.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_21: Test_OK \n";
@@ -1206,7 +1281,7 @@ int SOMEIPSRV_FORMAT_23()
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
-    system("sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl start SomeipNotify.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -1222,7 +1297,7 @@ int SOMEIPSRV_FORMAT_23()
     std::thread sender(run_23);
     app->start();
     sender.join();
-    system("sudo systemctl stop SomeipServerEvent.service");
+    system("sudo systemctl stop SomeipNotify.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_FORMAT_23: Test_OK \n";
