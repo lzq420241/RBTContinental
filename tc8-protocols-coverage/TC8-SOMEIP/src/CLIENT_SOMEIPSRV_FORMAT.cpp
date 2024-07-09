@@ -6,6 +6,7 @@
 #include <thread>
 #include <unistd.h>
 #include <vsomeip/vsomeip.hpp>
+#include <serviceentry_impl.hpp>
 //sniff offer service
 #include <string.h>
 #include <sys/socket.h>
@@ -1046,15 +1047,15 @@ int SOMEIPSRV_FORMAT_17()
     {
         vsomeip::sd::entry_impl *e;
         e = get_first_entry(sd_return.SD_Received_Message);
-        if (e->get_ttl() == (int)SERVICE_ID_1_MAJ_VER)
+        if (e->get_ttl() == (int)SERVICE_ID_1_TTL)
         {
-            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with TTL in Entry Array = " << SERVICE_ID_1_MAJ_VER << "\n"
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with TTL in Entry Array = " << SERVICE_ID_1_TTL << "\n"
                       << std::endl;
             test_ok = true;
         }
         else
         {
-            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE)  with TTL in Entry Array = " << (int)e->get_major_version() << "\n"
+            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE)  with TTL in Entry Array = " << (int)e->get_ttl() << "\n"
                       << std::endl;
         }
     }
@@ -1080,8 +1081,48 @@ int SOMEIPSRV_FORMAT_17()
 }
 int SOMEIPSRV_FORMAT_18()
 {
-    printf("\tNOT IMPLEMENTED YET ");
-    return 2;
+    app = vsomeip::runtime::get()->create_application("testClient");
+    app->init();
+    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
+    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipServerEvent.service");
+    SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
+    if (sd_return.SD_Result == Receive_E_OK)
+    {
+        vsomeip::sd::serviceentry_impl *e;
+        e = (vsomeip::sd::serviceentry_impl *)get_first_entry(sd_return.SD_Received_Message);
+        if ((uint8_t)e->get_minor_version() == (uint8_t)SERVICE_ID_1_MINOR_VER)
+        {
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE)  with  Minor Version in Entry Array = " << SERVICE_ID_1_MINOR_VER << "\n"
+                      << std::endl;
+            test_ok = true;
+        }
+        else
+        {
+            std::cout << "\nPart 1 of test is NOT OK: Notification received (OFFER SERVICE)  with Minor Version  in Entry Array = " << (int)e->get_minor_version() << "\n"
+                      << std::endl;
+        }
+    }
+    else
+    {
+        std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
+                   << std::endl;
+    }
+    std::thread sender(run_16);
+    app->start();
+    sender.join();
+    system("sudo systemctl stop SomeipServerEvent.service");
+    if (test_ok)
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_18: Test_OK \n";
+        return 0;
+    }
+    else
+    {
+        std::cout << "\nSOMEIPSRV_FORMAT_18: Test_NOK \n";
+        return 1;
+    }
 }
 int SOMEIPSRV_FORMAT_19()
 {

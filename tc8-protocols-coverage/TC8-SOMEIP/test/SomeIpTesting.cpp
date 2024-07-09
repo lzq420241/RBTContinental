@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
-#define MAXSIZE 50
+#define MAXSIZE 500
 
 int main()
 {

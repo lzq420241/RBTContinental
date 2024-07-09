@@ -39,6 +39,7 @@
 #define SERVICE_ID_2 0x1243 /*Service ID of Service 2*/
 #define SERVICE_ID_1_INSTANCE_ID 0x5678 /*Instance ID of Service 1*/
 #define SERVICE_ID_1_MAJ_VER 0XFF /*Major version supported by Service 1*/
+#define SERVICE_ID_1_TTL 0x3 /*TTL defined in sevice-discovery section of configuration json*/
 #define SERVICE_ID_1_INTF_VER_MAJ 0x00 /*Interface Version of Service 1*/
 #define SERVICE_ID_2_INTF_VER_MAJ /*Interface Version of Service 2*/
 #define SERVICE_ID_1_TTL 3/*TTL value of Service 1.*/
