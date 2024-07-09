@@ -373,10 +373,6 @@ int main(int argc, char *argv[])
 }
 int SOMEIPSRV_FORMAT_01()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -399,9 +395,6 @@ int SOMEIPSRV_FORMAT_01()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_01);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -416,10 +409,6 @@ int SOMEIPSRV_FORMAT_01()
 }
 int SOMEIPSRV_FORMAT_02()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -442,9 +431,6 @@ int SOMEIPSRV_FORMAT_02()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_02);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -459,10 +445,6 @@ int SOMEIPSRV_FORMAT_02()
 }
 int SOMEIPSRV_FORMAT_03()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -485,9 +467,6 @@ int SOMEIPSRV_FORMAT_03()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_03);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -502,10 +481,6 @@ int SOMEIPSRV_FORMAT_03()
 }
 int SOMEIPSRV_FORMAT_04()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -528,9 +503,6 @@ int SOMEIPSRV_FORMAT_04()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_04);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -545,10 +517,6 @@ int SOMEIPSRV_FORMAT_04()
 }
 int SOMEIPSRV_FORMAT_05()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -571,9 +539,6 @@ int SOMEIPSRV_FORMAT_05()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_05);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -588,10 +553,6 @@ int SOMEIPSRV_FORMAT_05()
 }
 int SOMEIPSRV_FORMAT_06()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -614,9 +575,6 @@ int SOMEIPSRV_FORMAT_06()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_06);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -631,10 +589,6 @@ int SOMEIPSRV_FORMAT_06()
 }
 int SOMEIPSRV_FORMAT_07()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -657,9 +611,6 @@ int SOMEIPSRV_FORMAT_07()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_07);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -674,10 +625,6 @@ int SOMEIPSRV_FORMAT_07()
 }
 int SOMEIPSRV_FORMAT_08()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -700,9 +647,6 @@ int SOMEIPSRV_FORMAT_08()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_08);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -715,13 +659,8 @@ int SOMEIPSRV_FORMAT_08()
         return 1;
     }
 }
-
 int SOMEIPSRV_FORMAT_09()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -744,9 +683,6 @@ int SOMEIPSRV_FORMAT_09()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_08);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -761,10 +697,6 @@ int SOMEIPSRV_FORMAT_09()
 }
 int SOMEIPSRV_FORMAT_10()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -787,9 +719,6 @@ int SOMEIPSRV_FORMAT_10()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_08);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
@@ -804,11 +733,6 @@ int SOMEIPSRV_FORMAT_10()
 }
 int SOMEIPSRV_FORMAT_11()
 {
-    app = vsomeip::runtime::get()->create_application("testClient");
-    app->init();
-    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-    sleep(2);
-    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     system("sudo systemctl daemon-reload ");
     system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
@@ -850,9 +774,6 @@ int SOMEIPSRV_FORMAT_11()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE  \n"
                    << std::endl;
     }
-    std::thread sender(run_08);
-    app->start();
-    sender.join();
     system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
