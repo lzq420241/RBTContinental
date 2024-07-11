@@ -16,6 +16,7 @@
 ******************************************************************************/
 #include <chrono>
 #include <vsomeip/vsomeip.hpp>
+#include <boost/asio/ip/address_v4.hpp>
 #include "udp.hpp"
 #include "utility/include/byteorder.hpp"
 #include "message/include/deserializer.hpp"
@@ -27,7 +28,7 @@
 #include "service_discovery/include/eventgroupentry_impl.hpp"
 #include "message/include/message_impl.hpp"
 #include "service_discovery/include/option_impl.hpp"
-#include "service_discovery/include/ip_option_impl.hpp"
+#include "service_discovery/include/ipv4_option_impl.hpp"
 
 /******************************************************************************
 * MACROS
@@ -276,6 +277,29 @@ int get_number_of_ipv4_option (std::shared_ptr<vsomeip::sd::message_impl> msg );
 ***************************************************************************************************/
 
 int get_port_of_ipv4_option (std::shared_ptr<vsomeip::sd::message_impl> msg );
+
+/***************************************************************************************************
+*
+*   FUNCTION NAME: get_addr_of_ipv4_option
+*
+***************************************************************************************************/
+/**
+* @brief
+*  This fuction will return the address of ipv4 endpoint option
+*
+* @par Parameters
+* @param[in]    msg                                         the msg to extract the addr from
+*
+* @return std::string                                       the addr of ipv4 endpoint option
+*
+* @note
+* -
+*
+* @warning
+* -
+*
+***************************************************************************************************/
+std::string get_addr_of_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg);
 
 #endif /* SD_API_H_ */
 /** \}    end of addtogroup */

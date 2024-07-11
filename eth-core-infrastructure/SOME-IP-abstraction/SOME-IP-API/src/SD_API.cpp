@@ -625,3 +625,39 @@ int get_port_of_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg)
     }
     return ip_opt->get_port();
 }
+
+/***************************************************************************************************
+*
+*   FUNCTION NAME: get_addr_of_ipv4_option
+*
+***************************************************************************************************/
+/**
+* @brief
+*  This fuction will return the address of ipv4 endpoint option
+*
+* @par Parameters
+* @param[in]    msg                                         the msg to extract the addr from
+*
+* @return std::string                                       the addr of ipv4 endpoint option
+*
+* @note
+* -
+*
+* @warning
+* -
+*
+***************************************************************************************************/
+std::string get_addr_of_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg)
+{
+    std::shared_ptr<vsomeip::sd::ipv4_option_impl> ip_opt;
+    for (auto o : msg->get_options())
+    {
+        if (o->get_type() == vsomeip::sd::option_type_e::IP4_ENDPOINT)
+        {
+            ip_opt = std::static_pointer_cast<vsomeip::sd::ipv4_option_impl>(o);
+            break;
+        }
+    }
+    boost::asio::ip::address_v4 address(ip_opt->get_address());
+    return address.to_string();
+}

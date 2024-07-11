@@ -49,6 +49,7 @@
 #define EVENT_GROUP_ID_1_SI_1 0x4455 /*Eventgroup ID 1 of Service 1.*/
 #define SERVICE_ID_1_UDP_PORT /*UDP port number where Service 1 runs.*/
 #define SOME_IP_MULTICAST_IP_ADDR "224.224.224.245" /*Multicast Address used by SOME/IP-SD.*/
+#define SOME_IP_UNICAST_IP_ADDR "10.10.60.73" /*Multicast Address used by SOME/IP-SD.*/
 #define CLIENT1_CURR_REQUEST_ID 0x13130001/*Current Request ID of Client 1 (client_id_1 / session_id_1).*/
 #define EVENT_ID_1_EG_ID_1 0x7788 /*Field Event ID 1 of Eventgroup ID 1 that will be sent out initially at initial subscription*/
 #define EVENT_ID_1_EG_ID_2 /*Field Event ID 1 of Eventgroup ID 2 that will be sent out initially at initial subscription*/

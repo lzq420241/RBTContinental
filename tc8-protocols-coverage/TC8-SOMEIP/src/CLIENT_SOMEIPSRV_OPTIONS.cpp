@@ -275,8 +275,49 @@ int SOMEIPSRV_OPTIONS_03()
 }
 int SOMEIPSRV_OPTIONS_04()
 {
-    printf("\tNOT IMPLEMENTED YET ");
-    return 2;
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipNotify.service");
+
+    std::thread sender(run);
+    app = vsomeip::runtime::get()->create_application("testClient");
+    app->init();
+    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
+    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
+    app->start();
+    SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
+    if (sd_return.SD_Result == Receive_E_OK)
+    {
+        vsomeip::sd::option_impl *o;
+        if (get_addr_of_ipv4_option(sd_return.SD_Received_Message) == SOME_IP_UNICAST_IP_ADDR)
+        {
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE) with ip addr of IPv4 Option Array is set to " << SOME_IP_UNICAST_IP_ADDR << "\n"
+                      << std::endl;
+            test_ok = true;
+        }
+        else
+        {
+            std::cout << "\nPart 1 of test is NOT Ok: Notification received (OFFER SERVICE) with wrong ip addr of IPv4 Option Array \n"
+                      << std::endl;
+            std ::cout << "Found : "<< get_addr_of_ipv4_option(sd_return.SD_Received_Message) <<" , Expected : " << SOME_IP_UNICAST_IP_ADDR << std::endl;
+        }
+    }
+    else if (sd_return.SD_Result == Receive_Timout)
+    {
+        std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE \n"
+                   << std::endl;
+    }
+    sender.join();
+    system("sudo systemctl stop SomeipNotify.service");
+    if (test_ok)
+    {
+        std::cout << "\nSOMEIPSRV_OPTIONS_04: : Test_OK \n";
+        return 0;
+    }
+    else
+    {
+        std::cout << "\nSOMEIPSRV_OPTIONS_04: : Test_NOK \n";
+        return 1;
+    }
 }
 int SOMEIPSRV_OPTIONS_05()
 {
