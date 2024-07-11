@@ -543,13 +543,15 @@ vsomeip::sd::eventgroupentry_impl get_first_eventGroup_entry(std::shared_ptr<vso
     }
 }
 
-vsomeip::sd::option_impl *get_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg)
+vsomeip::sd::ip_option_impl *get_ipv4_option(std::shared_ptr<vsomeip::sd::message_impl> msg)
 {
     for (auto o : msg->get_options())
     {
         if (o->get_type() == vsomeip::sd::option_type_e::IP4_ENDPOINT)
         {
-            return o.get();
+            std::shared_ptr<vsomeip::sd::ip_option_impl> casted_opt =
+                std::static_pointer_cast<vsomeip::sd::ip_option_impl>(o);
+            return casted_opt.get();
         }
     }
 }

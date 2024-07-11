@@ -226,7 +226,7 @@ vsomeip::sd::serviceentry_impl get_first_service_entry(std::shared_ptr<vsomeip::
 ***************************************************************************************************/
 vsomeip::sd::eventgroupentry_impl get_first_eventGroup_entry(std::shared_ptr<vsomeip::sd::message_impl> msg );
 
-vsomeip::sd::option_impl* get_ipv4_option (std::shared_ptr<vsomeip::sd::message_impl> msg );
+vsomeip::sd::ip_option_impl* get_ipv4_option (std::shared_ptr<vsomeip::sd::message_impl> msg );
 
 /***************************************************************************************************
 *

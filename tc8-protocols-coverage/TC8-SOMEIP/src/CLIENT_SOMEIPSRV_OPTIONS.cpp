@@ -57,6 +57,16 @@ void run()
     app->release_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
     app->stop();
 }
+void check_subscribe_ack_validation(int test_number, SD_Listen_Return sd_return)
+{
+    switch(test_number)
+    {
+    case 1:
+        break;
+    case 2:
+        break;
+    }
+}
 void on_availability(vsomeip::service_t _service, vsomeip::instance_t _instance, bool _is_available)
 {
     std::cout << "CLIENT: Service ["
@@ -127,12 +137,15 @@ int main(int argc, char *argv[])
 
 int SOMEIPSRV_OPTIONS_01()
 {
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipNotify.service");
+
+    std::thread sender(run);
     app = vsomeip::runtime::get()->create_application("testClient");
     app->init();
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    app->start();
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1, vsomeip::sd::option_type_e::IP4_ENDPOINT, 1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -155,10 +168,8 @@ int SOMEIPSRV_OPTIONS_01()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE \n"
                    << std::endl;
     }
-    std::thread sender(run);
-    app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipNotify.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_OPTIONS_01: : Test_OK \n";
@@ -172,16 +183,15 @@ int SOMEIPSRV_OPTIONS_01()
 }
 int SOMEIPSRV_OPTIONS_02()
 {
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipNotify.service");
+
+    std::thread sender(run);
     app = vsomeip::runtime::get()->create_application("testClient");
-
     app->init();
-
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
-
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
-
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    app->start();
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -204,10 +214,8 @@ int SOMEIPSRV_OPTIONS_02()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE \n"
                    << std::endl;
     }
-    std::thread sender(run);
-    app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipNotify.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_OPTIONS_02: : Test_OK \n";
@@ -221,8 +229,49 @@ int SOMEIPSRV_OPTIONS_02()
 }
 int SOMEIPSRV_OPTIONS_03()
 {
-    printf("\tNOT IMPLEMENTED YET ");
-    return 2;
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipNotify.service");
+
+    std::thread sender(run);
+    app = vsomeip::runtime::get()->create_application("testClient");
+    app->init();
+    app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
+    app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
+    app->start();
+    SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
+    if (sd_return.SD_Result == Receive_E_OK)
+    {
+        vsomeip::sd::option_impl *o;
+        if (get_ipv4_option(sd_return.SD_Received_Message)->get_reserved() == 0x00)
+        {
+            std::cout << "\nPart 1 of test is Ok: Notification received (OFFER SERVICE) with reserve of IPv4 Option Array is set to 00 \n"
+                      << std::endl;
+            test_ok = true;
+        }
+        else
+        {
+            std::cout << "\nPart 1 of test is NOT Ok: Notification received (OFFER SERVICE) with wrong reserve field of IPv4 Option Array \n"
+                      << std::endl;
+            std ::cout << "Found : "<< get_ipv4_option(sd_return.SD_Received_Message)->get_reserved() <<" , Expected : 00" <<std::endl;
+        }
+    }
+    else if (sd_return.SD_Result == Receive_Timout)
+    {
+        std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE \n"
+                   << std::endl;
+    }
+    sender.join();
+    system("sudo systemctl stop SomeipNotify.service");
+    if (test_ok)
+    {
+        std::cout << "\nSOMEIPSRV_OPTIONS_03: : Test_OK \n";
+        return 0;
+    }
+    else
+    {
+        std::cout << "\nSOMEIPSRV_OPTIONS_03: : Test_NOK \n";
+        return 1;
+    }
 }
 int SOMEIPSRV_OPTIONS_04()
 {
