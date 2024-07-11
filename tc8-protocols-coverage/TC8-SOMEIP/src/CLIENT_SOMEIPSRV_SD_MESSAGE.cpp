@@ -373,14 +373,14 @@ int main(int argc, char *argv[])
 
 int SOMEIPSRV_SD_MESSAGE_01()
 {
-    //system("sshpass -p raspberry ssh pi@192.168.20.117 sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipServer.service /etc/systemd/system/SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse@2.service");
+    std::thread sender(run_01);
     app = vsomeip::runtime::get()->create_application("testClient");
     app->init();
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, 0xFFFF);
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_01);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1, (vsomeip::sd::option_type_e)0, 0, 2);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -403,9 +403,11 @@ int SOMEIPSRV_SD_MESSAGE_01()
         std ::cout << "\nPart 1 of test is NOT Ok: Timeout without receiving OFFER SERVICE \n"
                    << std::endl;
     }
+    vsomeip::instance_t extractedInstID1;
     vsomeip::instance_t extractedInstID2;
+    extractedInstID1 = sd_return.SD_Received_Message->get_entries()[0]->get_instance();
     extractedInstID2 = sd_return.SD_Received_Message->get_entries()[1]->get_instance();
-    if (sd_return.SD_Received_Message->get_entries()[0]->get_instance() != extractedInstID2)
+    if (extractedInstID1 != extractedInstID2)
     {
         std::cout << "\nPart 2 of test is Ok: Correct Service Instance ID of Offer Service Entry 1 \n"
                   << std::endl;
@@ -414,13 +416,12 @@ int SOMEIPSRV_SD_MESSAGE_01()
     else
     {
         std::cout << "\nPart 2 of test is NOT Ok: Wrong Service Instance ID of Offer Service Entry 1\n"
-                  << std::endl;
+                  << "InstID1 is " << std::hex << extractedInstID1 << ", InstID2 is " << extractedInstID2 << std::endl;
         test_ok &= false;
     }
-    std::thread sender(run_01);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse@2.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_01: : Test_OK \n";
@@ -439,14 +440,14 @@ int SOMEIPSRV_SD_MESSAGE_02()
 }
 int SOMEIPSRV_SD_MESSAGE_03()
 {
-    //system("sshpass -p raspberry ssh pi@192.168.20.117 sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipServer.service /etc/systemd/system/SomeipServer.service");
+    //system("sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipResponse.service /etc/systemd/system/SomeipResponse.service");
     app = vsomeip::runtime::get()->create_application("testClient");
     app->init();
     app->register_availability_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, on_availability);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, 0xFF, 0xfffffff);
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_03);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -472,7 +473,7 @@ int SOMEIPSRV_SD_MESSAGE_03()
     std::thread sender(run_03);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_03: : Test_OK \n";
@@ -486,7 +487,7 @@ int SOMEIPSRV_SD_MESSAGE_03()
 }
 int SOMEIPSRV_SD_MESSAGE_04()
 {
-    //system("sshpass -p raspberry ssh pi@192.168.20.117 sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipServer.service /etc/systemd/system/SomeipServer.service");
+    //system("sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipResponse.service /etc/systemd/system/SomeipResponse.service");
     app = vsomeip::runtime::get()->create_application("testClient");
 
     app->init();
@@ -496,8 +497,8 @@ int SOMEIPSRV_SD_MESSAGE_04()
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, SERVICE_ID_1_MAJ_VER, 0xfffffff);
 
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_04);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -524,7 +525,7 @@ int SOMEIPSRV_SD_MESSAGE_04()
     std::thread sender(run_04);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_04: : Test_OK \n";
@@ -538,7 +539,7 @@ int SOMEIPSRV_SD_MESSAGE_04()
 }
 int SOMEIPSRV_SD_MESSAGE_05()
 {
-    //system("sshpass -p raspberry ssh pi@192.168.20.117 sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipServer.service /etc/systemd/system/SomeipServer.service");
+    //system("sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipResponse.service /etc/systemd/system/SomeipResponse.service");
     app = vsomeip::runtime::get()->create_application("testClient");
 
     app->init();
@@ -548,8 +549,8 @@ int SOMEIPSRV_SD_MESSAGE_05()
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, SERVICE_ID_1_MAJ_VER, 0xfffffff);
 
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_05);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -576,7 +577,7 @@ int SOMEIPSRV_SD_MESSAGE_05()
     std::thread sender(run_05);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_05: : Test_OK \n";
@@ -590,7 +591,7 @@ int SOMEIPSRV_SD_MESSAGE_05()
 }
 int SOMEIPSRV_SD_MESSAGE_06()
 {
-    //system("sshpass -p raspberry ssh pi@192.168.20.117 sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipServer.service /etc/systemd/system/SomeipServer.service");
+    //system("sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipResponse.service /etc/systemd/system/SomeipResponse.service");
     app = vsomeip::runtime::get()->create_application("testClient");
 
     app->init();
@@ -600,8 +601,8 @@ int SOMEIPSRV_SD_MESSAGE_06()
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, vsomeip::ANY_MAJOR, 0xFFFFFFFF);
 
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_06);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -628,7 +629,7 @@ int SOMEIPSRV_SD_MESSAGE_06()
     std::thread sender(run_06);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_06: : Test_OK \n";
@@ -642,7 +643,7 @@ int SOMEIPSRV_SD_MESSAGE_06()
 }
 int SOMEIPSRV_SD_MESSAGE_07()
 {
-    //system("sshpass -p raspberry ssh pi@192.168.20.117 sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipServer.service /etc/systemd/system/SomeipServer.service");
+    //system("sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipResponse.service /etc/systemd/system/SomeipResponse.service");
     app = vsomeip::runtime::get()->create_application("testClient");
 
     app->init();
@@ -652,8 +653,8 @@ int SOMEIPSRV_SD_MESSAGE_07()
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
 
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_07);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -678,7 +679,7 @@ int SOMEIPSRV_SD_MESSAGE_07()
     std::thread sender(run_07);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_07: : Test_OK \n";
@@ -692,7 +693,7 @@ int SOMEIPSRV_SD_MESSAGE_07()
 }
 int SOMEIPSRV_SD_MESSAGE_08()
 {
-    //system("sshpass -p raspberry ssh pi@192.168.20.117 sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipServer.service /etc/systemd/system/SomeipServer.service");
+    //system("sudo mv /home/pi/precompiled/projet_Rpi.2/SomeipResponse.service /etc/systemd/system/SomeipResponse.service");
     app = vsomeip::runtime::get()->create_application("testClient");
 
     app->init();
@@ -702,8 +703,8 @@ int SOMEIPSRV_SD_MESSAGE_08()
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, SERVICE_ID_1_MAJ_VER, 0xfffffff);
 
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_08);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -730,7 +731,7 @@ int SOMEIPSRV_SD_MESSAGE_08()
     std::thread sender(run_08);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_08: : Test_OK \n";
@@ -753,8 +754,8 @@ int SOMEIPSRV_SD_MESSAGE_09()
 
     sleep(2);
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServerEvent.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipServerEvent.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     sleep(2);
     if (sd_return.SD_Result == Receive_E_OK)
@@ -785,7 +786,7 @@ int SOMEIPSRV_SD_MESSAGE_09()
     std::thread sender(run_09);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_09: : Test_OK \n";
@@ -808,8 +809,8 @@ int SOMEIPSRV_SD_MESSAGE_11()
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
 
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_11);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -837,7 +838,7 @@ int SOMEIPSRV_SD_MESSAGE_11()
     std::thread sender(run_11);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_11: : Test_OK \n";
@@ -860,8 +861,8 @@ int SOMEIPSRV_SD_MESSAGE_13()
     app->request_service(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID);
 
     app->register_message_handler(SERVICE_ID_1, SERVICE_ID_1_INSTANCE_ID, METHOD_ID_1_SI_1, on_message_13);
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl daemon-reload ");
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl start SomeipServer.service");
+    system("sudo systemctl daemon-reload ");
+    system("sudo systemctl start SomeipResponse.service");
     SD_Listen_Return sd_return = ListenOffer(ParamListenTime, SERVICE_ID_1);
     if (sd_return.SD_Result == Receive_E_OK)
     {
@@ -878,7 +879,7 @@ int SOMEIPSRV_SD_MESSAGE_13()
     std::thread sender(run_13);
     app->start();
     sender.join();
-    system("sshpass -p raspberry ssh pi@192.168.20.117 sudo systemctl stop SomeipServer.service");
+    system("sudo systemctl stop SomeipResponse.service");
     if (test_ok)
     {
         std::cout << "\nSOMEIPSRV_SD_MESSAGE_13: : Test_OK \n";
